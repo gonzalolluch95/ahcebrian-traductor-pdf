@@ -6,7 +6,7 @@ lanzar en el ordenador. El "traductor" de aqui devuelve el propio texto del OCR
 en mayusculas: asi se ve de un vistazo QUE ha leido Tesseract y como quedan los
 parches, que es lo que hay que mirar en un escaneado.
 
-    cd traductor && python -m modal run pruebas/ocr_modal.py --ruta "..\\..\\..\\Base\\Egglin\\ISO 9001 Turkish .- 28.03.2025 15.32_page-0002.pdf"
+    python -m modal run pruebas/ocr_modal.py --ruta "ruta/a/un/escaneado.pdf" --origen tr
 
 Deja el PDF y un PNG por pagina en traductor/pruebas/out/.
 """

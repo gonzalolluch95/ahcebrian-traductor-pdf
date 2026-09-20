@@ -19,7 +19,7 @@ que el OCR leyo mal. Donde el OCR lee "yrarlogekoydugunu", el modelo ve la
 palabra y entiende "yürürlüğe koyduğunu".
 
 Tesseract (Apache-2.0) y no el modelo de serie de rapidocr: probado sobre el
-ISO 9001 turco del cliente, el de serie (chino + ingles) se come TODAS las
+un certificado ISO 9001 turco escaneado, el de serie (chino + ingles) se come TODAS las
 diacriticas turcas.
 """
 

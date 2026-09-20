@@ -27,6 +27,7 @@ from analisis import analizar  # noqa: E402
 from motor import (  # noqa: E402
     Resultado, es_traducible, escribir_pagina, guardar, leer_pagina,
 )
+import corpus  # noqa: E402
 from simulacro import documento_de_prueba, simular  # noqa: E402
 
 fallos = 0
@@ -189,19 +190,9 @@ check('veredicto: un PDF con contraseña es «protegido»', informe['veredicto']
 
 # --- Los documentos del cliente, si estan a mano ----------------------------------
 
-CORPUS = [
-    ('Base/Tunanets/04.11.2025 NETTING PRICE LIST 2025.pdf', 'lista de precios'),
-    ('Añadir egglin v4/Fichas técnicas e información legal/MSDS-SDS.pdf', 'ficha de seguridad'),
-    ('Añadir egglin v4/Fichas técnicas e información legal/pesticides and heavy metals.pdf', 'declaración'),
-]
-
+# Cuales son sale de `corpus.txt`, que no se publica: ver pruebas/corpus.py.
 raiz = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(__file__).resolve().parents[3]
-encontrados = 0
-for relativa, nombre in CORPUS:
-    fichero = raiz / relativa
-    if not fichero.exists():
-        continue
-    encontrados += 1
+for fichero, nombre in corpus.documentos(raiz):
     datos = fichero.read_bytes()
     antes = cuenta(datos)
     salida, resultado, fragmentos = traducir_todo(datos)
@@ -221,15 +212,16 @@ for relativa, nombre in CORPUS:
     check(f'{nombre}: el veredicto es «traducible»', informe['veredicto'] == 'traducible', informe['veredicto'])
 
 # Y un escaneado de verdad, que es el caso que mas se va a dar.
-escaneado_real = raiz / 'Base/Egglin/ISO 9001 Turkish .- 28.03.2025 15.32_page-0002.pdf'
-if escaneado_real.exists():
+escaneado_real = corpus.escaneado(raiz)
+if escaneado_real:
     datos = escaneado_real.read_bytes()
     informe = analizar(pymupdf.open(stream=datos, filetype='pdf'), tamano=len(datos))
-    check('ISO 9001 turco: se reconoce como escaneado', informe['veredicto'] == 'escaneado', informe['veredicto'])
-    check('ISO 9001 turco: ninguna página con texto', informe['paginasConTexto'] == 0)
+    check('escaneado real: se reconoce como escaneado', informe['veredicto'] == 'escaneado', informe['veredicto'])
+    check('escaneado real: ninguna página con texto', informe['paginasConTexto'] == 0)
 
-if not encontrados:
-    print('(los PDF del cliente no están en esta carpeta: solo se ha probado el documento sintético)')
+aviso = corpus.aviso(raiz)
+if aviso:
+    print(aviso)
 
 print('\nTodo bien' if fallos == 0 else f'\n{fallos} fallo(s)')
 sys.exit(0 if fallos == 0 else 1)

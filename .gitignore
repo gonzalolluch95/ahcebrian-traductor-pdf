@@ -3,3 +3,6 @@ __pycache__/
 # Lo que dejan las pruebas al mirar un documento: PDF y PNG de paginas de
 # verdad. No se publica nada de eso.
 pruebas/out/
+# La lista de documentos con los que se mide: son de una empresa y sus
+# nombres no se publican. Ver pruebas/corpus.py.
+pruebas/corpus.txt

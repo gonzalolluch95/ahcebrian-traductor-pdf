@@ -8,24 +8,6 @@ No guarda nada. El documento solo existe en la memoria del contenedor mientras
 dura la petición, y Modal lo destruye al terminar: no hay disco, ni base de
 datos, ni copia del contenido en ningún sitio.
 
-## Por qué existe este repositorio
-
-Porque [PyMuPDF](https://github.com/pymupdf/PyMuPDF) es AGPL-3.0, y una licencia
-AGPL obliga a ofrecer el código fuente a quien usa el programa **por red**. Esto
-es lo que corre detrás de la herramienta de
-[ahcebrian.com/tools](https://ahcebrian.com/tools/), publicado para cumplir con
-esa obligación.
-
-Es una **copia del directorio `traductor/`** del repositorio privado de la web.
-No es una biblioteca ni pretende serlo: está escrito para los documentos que le
-llegan a una empresa concreta (fichas técnicas, certificados y listas de precios
-que vienen de Turquía). Se puede leer, copiar y adaptar bajo los términos de la
-AGPL, pero no hay soporte ni se atienden incidencias.
-
-Las pruebas que miden la fidelidad esperan encontrar los PDF del cliente, que
-por razones obvias no están aquí: sin ellos se saltan solas y queda el documento
-sintético, que sí se construye en el propio código (`pruebas/simulacro.py`).
-
 ## Las piezas
 
 | Fichero | Qué hace |
@@ -87,15 +69,18 @@ Las dos columnas no miden lo mismo, y la segunda es la que importa: una línea
 pisada no es un defecto estético, es texto que no se puede leer.
 
 **Que un documento salga «distinto» no quiere decir que salga mal.** El peor de
-los ocho (`Food Defence`) marca casi un 12 % y no tiene ni una línea pisada: lo
-que cambia es cómo parten las líneas dentro de cada párrafo. Y buena parte de
+los ocho marca casi un 12 % y no tiene ni una línea pisada: lo que cambia es
+cómo parten las líneas dentro de cada párrafo. Y buena parte de
 lo que queda es una deriva de una décima de punto por palabra, porque MuPDF
 separa las palabras un pelín menos que el generador original; al final de una
 línea larga eso suma un punto y el contador de píxeles lo ve, pero un ojo no.
 
-El corpus son ocho documentos elegidos porque cada uno rompía algo: tablas con
-rejilla, una ficha de seguridad, una política llena de listas, un folleto a dos
-columnas y un par de fichas normales.
+El corpus son ocho documentos reales elegidos porque cada uno rompía algo:
+tablas con rejilla, una ficha de seguridad, una política llena de listas, un
+folleto a dos columnas y un par de fichas normales. **Cuáles son sale de
+`pruebas/corpus.txt`, que no se publica** (ver `pruebas/corpus.py`): el código
+es público, pero los nombres de los documentos de una empresa no tienen por qué
+serlo. Sin esa lista las pruebas siguen corriendo con el documento sintético.
 
 ## Las reglas del motor
 
@@ -170,6 +155,7 @@ Y estas salieron de medir la fidelidad, no de mirarla:
 ## Publicar y probar
 
 ```bash
+cd traductor
 python -m modal deploy app.py
 
 # Las pruebas del motor y del veredicto (69 comprobaciones, sin red ni cuota):

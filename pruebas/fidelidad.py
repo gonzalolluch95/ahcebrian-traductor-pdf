@@ -27,6 +27,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import numpy  # noqa: E402
 import pymupdf  # noqa: E402
 
+import corpus  # noqa: E402
 from motor import Resultado, escribir_pagina, guardar, leer_pagina  # noqa: E402
 
 #: A que resolucion se comparan. 120 es suficiente para ver un punto de
@@ -35,24 +36,6 @@ DPI = 120
 #: Cuanto tiene que cambiar un pixel para contarlo. Por debajo de esto es el
 #: suavizado de los bordes de las letras, que nunca sale igual dos veces.
 UMBRAL = 40
-
-#: Los documentos con los que se mide, que son los del cliente y los que
-#: enseñaron las reglas del motor.
-CORPUS = (
-    'Base/Tunanets/04.11.2025 NETTING PRICE LIST 2025.pdf',
-    'Añadir egglin v4/Fichas técnicas e información legal/MSDS-SDS.pdf',
-    'Añadir egglin v4/Fichas técnicas e información legal/pesticides and heavy metals.pdf',
-    'Añadir egglin v4/Nuevos productos/Egglin_Natural_Eggshell_Powder_EN.pdf',
-    'Añadir egglin v4/Fichas técnicas e información legal/Allergen Management Policy_Egglin.pdf',
-    'Añadir egglin v4/Nuevos productos/Egglin_x_Ebru_Akel_Joint_Mobility_Complex_EN.pdf',
-    # A dos columnas, que es el que enseño que "linea corta" hay que medirlo
-    # contra el hueco en el que vive y no contra el ancho de la pagina.
-    'Base/Egglin/DP-ESM.pdf',
-    # El peor de todos en parecido, y sin una sola linea pisada: sirve para no
-    # confundir "distinto" con "roto".
-    'Añadir egglin v4/Fichas técnicas e información legal/Food Defence_Egglin.pdf',
-)
-
 
 def gris(pagina: pymupdf.Page) -> numpy.ndarray:
     pix = pagina.get_pixmap(dpi=DPI, colorspace=pymupdf.csGRAY)
@@ -132,10 +115,8 @@ def main() -> int:
 
     medidas, lineas_pisadas = [], 0
     print('         texto igual            texto un 15 % mas largo')
-    for relativa in CORPUS:
-        fichero = raiz / relativa
-        if not fichero.exists():
-            continue
+    # Cuales son sale de `corpus.txt`, que no se publica: ver corpus.py.
+    for fichero, _ in corpus.documentos(raiz):
         medida = medir(fichero)
         if medida is None:
             continue
@@ -146,7 +127,7 @@ def main() -> int:
         print(f'{diferencia * 100:6.2f} % distinto   {pisa:3} líneas pisadas    '
               f'{fichero.name[:44]}{f"  ({encogidos} pág. encogidas)" if encogidos else ""}')
     if not medidas:
-        print('No se ha encontrado ninguno de los documentos de la lista.')
+        print(corpus.aviso(raiz) or 'No hay ningun documento con texto que medir.')
         print(f'Se buscan dentro de: {raiz}')
         return 2
     print(f'\n{sum(medidas) / len(medidas) * 100:6.2f} % de media   {lineas_pisadas:3} líneas pisadas en total'
