@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+# Lo que dejan las pruebas al mirar un documento: PDF y PNG de paginas de
+# verdad. No se publica nada de eso.
+pruebas/out/
